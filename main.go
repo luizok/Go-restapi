@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 
 	auth "github.com/luizok/myrestapi/api/auth"
+	models "github.com/luizok/myrestapi/api/models"
 )
 
 func main() {
@@ -31,7 +32,8 @@ func main() {
 
 	e.POST("/login", auth.Login)
 
-	e.Group("/api/v1", middleware.KeyAuth(auth.KeyAuthHandler))
+	api := e.Group("/api/v1", middleware.KeyAuth(auth.KeyAuthHandler))
+	models.AttachUsersRoutes(api)
 
 	e.Logger.Fatal(e.Start(":1323"))
 }

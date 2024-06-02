@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/google/uuid v1.6.0
 	github.com/labstack/echo/v4 v4.12.0
+	golang.org/x/exp v0.0.0-20240531132922-fd00a4e0eefc
 )
 
 require (
