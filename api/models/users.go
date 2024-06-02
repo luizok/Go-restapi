@@ -5,6 +5,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/luizok/myrestapi/api/auth"
 	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
 )
@@ -54,11 +55,11 @@ func AttachUsersRoutes(g *echo.Group) {
 	allUsers = generateFakeUsers()
 	users := g.Group("/users", middleware.RemoveTrailingSlash())
 
-	users.GET("", getUsers)
-	users.GET("/:id", getUser)
-	users.POST("", createUser)
-	users.PUT("/:id", updateUser)
-	users.DELETE("/:id", deleteUser)
+	users.GET("", getUsers, auth.CheckScopes([]string{auth.UsersReadOnly, auth.UsersReadWrite}))
+	users.GET("/:id", getUser, auth.CheckScopes([]string{auth.UsersReadOnly, auth.UsersReadWrite}))
+	users.POST("", createUser, auth.CheckScopes([]string{auth.UsersReadWrite}))
+	users.PUT("/:id", updateUser, auth.CheckScopes([]string{auth.UsersReadWrite}))
+	users.DELETE("/:id", deleteUser, auth.CheckScopes([]string{auth.UsersReadWrite}))
 }
 
 func getUsers(c echo.Context) error {
@@ -68,11 +69,11 @@ func getUsers(c echo.Context) error {
 func getUser(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return c.JSON(400, echo.Map{"error": "Bad Request. Invalid ID"})
+		return c.JSON(400, echo.Map{"message": "Bad Request. Invalid ID"})
 	}
 
 	if !slices.Contains(maps.Keys(allUsers), id) {
-		return c.JSON(404, echo.Map{"error": "Not Found"})
+		return c.JSON(404, echo.Map{"message": "Not Found"})
 
 	}
 

@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 
+	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
@@ -30,9 +31,9 @@ func main() {
 		})
 	})
 
-	e.POST("/login", auth.Login)
+	e.POST("/login", auth.LoginJWT)
 
-	api := e.Group("/api/v1", middleware.KeyAuth(auth.KeyAuthHandler))
+	api := e.Group("/api/v1", echojwt.JWT([]byte(auth.MyJWTSecret)))
 	models.AttachUsersRoutes(api)
 
 	e.Logger.Fatal(e.Start(":1323"))

@@ -1,0 +1,25 @@
+@host=http://localhost:1323
+@api_prefix=/api/v1
+@base_url={{host}}{{api_prefix}}
+
+###
+# @name POST_login
+POST {{host}}/login
+Content-Type: application/json
+
+{
+    "username": "admin",
+    "password": "admin"
+}
+
+###
+# @name GET_users
+GET {{base_url}}/users
+Content-Type: application/json
+Authorization: Bearer {{POST_login.response.body.token}}
+
+###
+# @name GET_users_id
+GET {{base_url}}/users/10
+Content-Type: application/json
+Authorization: Bearer {{POST_login.response.body.token}}

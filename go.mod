@@ -3,7 +3,9 @@ module github.com/luizok/myrestapi
 go 1.18
 
 require (
+	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/google/uuid v1.6.0
+	github.com/labstack/echo-jwt/v4 v4.2.0
 	github.com/labstack/echo/v4 v4.12.0
 	golang.org/x/exp v0.0.0-20240531132922-fd00a4e0eefc
 )
