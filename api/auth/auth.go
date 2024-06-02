@@ -1,8 +1,8 @@
 package auth
 
 import (
-	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -19,7 +19,7 @@ type UserCredentials struct {
 	Password string `json:"password"`
 }
 
-var MyJWTSecret string = "foobar"
+var MyJWTSecret string = os.Getenv("JWT_SECRET")
 
 func LoginJWT(c echo.Context) error {
 
@@ -73,7 +73,6 @@ func CheckScopes(requiredScopes []string) echo.MiddlewareFunc {
 
 			claims := token.Claims.(*JwtWithScopeClaims)
 
-			fmt.Println(claims.Scopes)
 			for _, v := range claims.Scopes {
 				for _, r := range requiredScopes {
 					if v == r {
