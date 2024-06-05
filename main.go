@@ -33,7 +33,10 @@ func main() {
 
 	e.POST("/login", auth.LoginJWT)
 
-	api := e.Group("/api/v1", echojwt.JWT([]byte(auth.MyJWTSecret)))
+	api := e.Group(
+		"/api/v1",
+		echojwt.JWT([]byte(auth.MyJWTSecret)),
+	)
 	models.AttachUsersRoutes(api)
 
 	e.Logger.Fatal(e.Start(":1323"))

@@ -21,6 +21,22 @@ type UserCredentials struct {
 
 var MyJWTSecret string = os.Getenv("JWT_SECRET")
 
+func parseJWTToken(token *jwt.Token) (*JwtWithScopeClaims, *echo.HTTPError) {
+	token, err := jwt.ParseWithClaims(
+		token.Raw,
+		&JwtWithScopeClaims{},
+		func(token *jwt.Token) (interface{}, error) { return []byte(MyJWTSecret), nil },
+	)
+
+	if err != nil {
+		return nil, echo.ErrUnauthorized
+	}
+
+	claims := token.Claims.(*JwtWithScopeClaims)
+
+	return claims, nil
+}
+
 func LoginJWT(c echo.Context) error {
 
 	u := new(UserCredentials)
@@ -61,17 +77,10 @@ func CheckScopes(requiredScopes []string) echo.MiddlewareFunc {
 
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			token := c.Get("user").(*jwt.Token)
-			token, err := jwt.ParseWithClaims(
-				token.Raw,
-				&JwtWithScopeClaims{},
-				func(token *jwt.Token) (interface{}, error) { return []byte(MyJWTSecret), nil })
-
+			claims, err := parseJWTToken(c.Get("user").(*jwt.Token))
 			if err != nil {
-				return echo.ErrUnauthorized
+				return err
 			}
-
-			claims := token.Claims.(*JwtWithScopeClaims)
 
 			for _, v := range claims.Scopes {
 				for _, r := range requiredScopes {
